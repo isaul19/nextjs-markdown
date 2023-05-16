@@ -7,9 +7,7 @@ import Head from "next/head";
 import Link from "next/link";
 import path from "path";
 import CustomLink from "../../components/CustomLink";
-import Layout from "../../components/Layout";
 import { postFilePaths, POSTS_PATH } from "../../utils/mdxUtils";
-import Navigation from "../../components/Navigation";
 
 // Custom components/renderers to pass to MDX.
 // Since the MDX files aren't loaded by webpack, they have no knowledge of how
@@ -26,7 +24,7 @@ const components = {
 
 export default function PostPage({ source, frontMatter }) {
     return (
-        <Layout>
+        <div>
             <header>
                 <nav>
                     <Link href="/posts" legacyBehavior>
@@ -56,7 +54,7 @@ export default function PostPage({ source, frontMatter }) {
                     opacity: 0.6;
                 }
             `}</style>
-        </Layout>
+        </div>
     );
 }
 
