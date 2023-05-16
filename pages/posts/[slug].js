@@ -2,58 +2,40 @@ import fs from "fs";
 import matter from "gray-matter";
 import { MDXRemote } from "next-mdx-remote";
 import { serialize } from "next-mdx-remote/serialize";
-import dynamic from "next/dynamic";
-import Head from "next/head";
 import Link from "next/link";
 import path from "path";
-import CustomLink from "../../components/CustomLink";
 import { postFilePaths, POSTS_PATH } from "../../utils/mdxUtils";
 
 // Custom components/renderers to pass to MDX.
 // Since the MDX files aren't loaded by webpack, they have no knowledge of how
 // to handle import statements. Instead, you must include components in scope
 // here.
-const components = {
-    a: CustomLink,
-    // It also works with dynamically-imported components, which is especially
-    // useful for conditionally loading components for certain routes.
-    // See the notes in README.md for more details.
-    TestComponent: dynamic(() => import("../../components/TestComponent")),
-    Head,
-};
 
 export default function PostPage({ source, frontMatter }) {
     return (
-        <div>
+        <div className="max-w-[80%] lg:max-w-[60%] mx-auto pt-10">
             <header>
-                <nav>
+                <nav className="text-lg mb-8">
                     <Link href="/posts" legacyBehavior>
-                        <a>👈 Go back home</a>
+                        <a>👈 Regresar</a>
                     </Link>
                 </nav>
             </header>
-            <div className="post-header">
-                <h1>{frontMatter.title}</h1>
-                {frontMatter.description && (
-                    <p className="description">{frontMatter.description}</p>
-                )}
+            <div className="post-header my-5">
+                <p className="text-4xl text-gray-300 font-bold">{frontMatter.title}</p>
+                <p>
+                    Creado en:{" "}
+                    <span className="text-gray-300 font-bold">{frontMatter.createdAt}</span>
+                </p>
+                <p>
+                    Ultima actualización:{" "}
+                    <span className="text-gray-300 font-bold">{frontMatter.updatedAt}</span>
+                </p>
             </div>
-            <main>
-                <MDXRemote {...source} components={components} />
-            </main>
-
-            <style jsx>{`
-                .post-header h1 {
-                    margin-bottom: 0;
-                }
-
-                .post-header {
-                    margin-bottom: 2rem;
-                }
-                .description {
-                    opacity: 0.6;
-                }
-            `}</style>
+            <hr />
+            <article className="prose max-w-[100ch] internal-prose ">
+                <MDXRemote {...source} />
+            </article>
         </div>
     );
 }

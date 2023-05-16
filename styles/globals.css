@@ -5,3 +5,20 @@
 a:hover {
     @apply underline;
 }
+
+.internal-prose h1,
+.internal-prose h2,
+.internal-prose h3,
+.internal-prose h4,
+.internal-prose h5,
+.internal-prose h6 {
+    @apply text-gray-300 text-3xl;
+}
+
+.internal-prose {
+    @apply py-10;
+}
+
+.internal-prose * {
+    @apply text-gray-400 text-lg;
+}

@@ -2,9 +2,9 @@ import Navigation from "../components/Navigation";
 
 export default function HomePage() {
     return (
-        <Navigation>
+        <Navigation className="mt-[10vh] sm:mt-[15vh]">
             <div className="flex flex-col lg:flex-row justify-between items-center pb-10 md:pb-0">
-                <div className="w-8/12">
+                <div className="w-10/12 sm:w-10/12">
                     <h1 className="text-5xl flex flex-wrap">
                         Hi there, <span>I’m Saúl👋</span>
                     </h1>

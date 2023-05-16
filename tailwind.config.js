@@ -9,7 +9,11 @@ module.exports = {
         "./src/**/*.{js,ts,jsx,tsx,mdx}",
     ],
     theme: {
-        extend: {},
+        extend: {
+            colors: {
+                "custom-blue": "#1E293B",
+            },
+        },
     },
-    plugins: [],
+    plugins: [require("@tailwindcss/typography")],
 };

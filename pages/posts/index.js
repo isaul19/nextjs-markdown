@@ -4,23 +4,25 @@ import Link from "next/link";
 import path from "path";
 import { postFilePaths, POSTS_PATH } from "../../utils/mdxUtils";
 import Navigation from "../../components/Navigation";
+import PostCard from "../../components/PostCard";
 
 export default function PostsPage({ posts }) {
     return (
-        <Navigation>
-            <h1>Proyectos: </h1>
-            <ul>
+        <Navigation className="mt-[8vh]">
+            <h1 className="text-5xl text-center">Proyectos </h1>
+            <div className="grid grid-cols-1 lg:grid-cols-2 pb-8 mt-5 gap-5">
                 {posts.map((post) => (
-                    <li key={post.filePath}>
+                    <article key={post.filePath} className="w-full h-full">
                         <Link
+                            className="hover:no-underline"
                             href={`/posts/[slug]`}
                             as={`/posts/${post.filePath.replace(/\.mdx?$/, "")}`}
                         >
-                            {post.data.title}
+                            <PostCard post={post} />
                         </Link>
-                    </li>
+                    </article>
                 ))}
-            </ul>
+            </div>
         </Navigation>
     );
 }

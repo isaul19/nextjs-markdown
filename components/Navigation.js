@@ -1,8 +1,8 @@
 import Link from "next/link";
 
-export default function Navigation({ children }) {
+export default function Navigation({ children, className }) {
     return (
-        <div className="sm:h-screen">
+        <div className="min-h-screen">
             <header className="max-w-[95%] sm:max-w-[85%] mx-auto pt-5 flex flex-col sm:flex-row items-center justify-between">
                 <div>
                     <p className="text-2xl font-bold">
@@ -23,7 +23,7 @@ export default function Navigation({ children }) {
                     </ul>
                 </nav>
             </header>
-            <main className="max-w-[95%] sm:max-w-[85%] mx-auto mt-[15vh] ">{children}</main>
+            <main className={`max-w-[95%] sm:max-w-[85%] mx-auto ${className}`}>{children}</main>
         </div>
     );
 }
