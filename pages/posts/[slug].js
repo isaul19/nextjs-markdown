@@ -33,7 +33,7 @@ export default function PostPage({ source, frontMatter }) {
                 </p>
             </div>
             <hr />
-            <article className="prose max-w-[100ch] internal-prose ">
+            <article className="prose max-w-[100ch] internal-prose">
                 <MDXRemote {...source} />
             </article>
         </div>

@@ -1,83 +1,150 @@
-# MDX Remote Example
+# Blog Nextjs & Markdown
 
-This example shows how a simple blog might be built using the [next-mdx-remote](https://github.com/hashicorp/next-mdx-remote) library, which allows mdx content to be loaded via `getStaticProps` or `getServerSideProps`. The mdx content is loaded from a local folder, but it could be loaded from a database or anywhere else.
+## Requerimientos
 
-The example also showcases [next-remote-watch](https://github.com/hashicorp/next-remote-watch), a library that allows next.js to watch files outside the `pages` folder that are not explicitly imported, which enables the mdx content here to trigger a live reload on change.
+-   Node (20v)
 
-Since `next-remote-watch` uses undocumented Next.js APIs, it doesn't replace the default `dev` script for this example. To use it, run `npm run dev:watch` or `yarn dev:watch`.
+He presentado problemas con npm, al tratar de inicializar un proyecto de \***\*Nextjs\*\***
+y \***\*Mdx-Remote\*\***. Por otro lado, con yarn no he presentado inconvenientes.
 
-## Deploy your own
+## Pasos
 
-Deploy the example using [Vercel](https://vercel.com?utm_source=github&utm_medium=readme&utm_campaign=next-example):
+1- Instalar yarn: Abré una terminal y antes de hacer copy/paste dirigite al directorio que está a
+nivel de usuario, ejem: $saul-home
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/vercel/next.js/tree/canary/examples/with-mdx-remote&project-name=with-mdx-remote&repository-name=with-mdx-remote)
-
-## How to use
-
-Execute [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) with [npm](https://docs.npmjs.com/cli/init), [Yarn](https://yarnpkg.com/lang/en/docs/cli/create/), or [pnpm](https://pnpm.io) to bootstrap the example:
-
-```bash
-npx create-next-app --example with-mdx-remote with-mdx-remote-app
+```
+npm install --global yarn
 ```
 
-```bash
-yarn create next-app --example with-mdx-remote with-mdx-remote-app
+2- Inicializar proyecto:
+
+Dirigete al directorio donde crearás el proyecto
+
+```
+yarn create next-app -e with-mdx-remote
 ```
 
-```bash
-pnpm create next-app --example with-mdx-remote with-mdx-remote-app
+Esto creará un proyecto con el enrutado de next12, además de que ya traerá todo instalado respecto
+a \***\*mdx-remote\*\***, e inclusive tendrá ejemplos, solo falta instalar tailwind.
+
+3- Agregar tailwind al proyecto:
+
+```
+yarn add  tailwindcss postcss autoprefixer --dev
 ```
 
-Deploy it to the cloud with [Vercel](https://vercel.com/new?utm_source=github&utm_medium=readme&utm_campaign=next-example) ([Documentation](https://nextjs.org/docs/deployment)).
+4- Inicializar tailwind:
 
-## Notes
+```
+npx tailwindcss init -p
+```
 
-### Conditional custom components
+5- Configurar tailwind: dirijete a la raiz y busca el archivo: \***\*tailwind.config.js\*\*** y has
+copy/paste lo siguiente:
 
-When using `next-mdx-remote`, you can pass custom components to the MDX renderer. However, some pages/MDX files might use components that are used infrequently, or only on a single page. To avoid loading those components on every MDX page, you can use `next/dynamic` to conditionally load them.
+```
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
 
-For example, here's how you can change `getStaticProps` to pass a list of component names, checking the names in the page render function to see which components need to be dynamically loaded.
+    // Or if using `src` directory:
+    "./src/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+```
 
-```js
-import dynamic from 'next/dynamic'
-import Test from '../components/test'
+6- Conectar tailwind y nextjs: Lo más probable es que no tengas ningun archivo css o carpeta de
+estilos, en el archivo raíz crea una carpeta llamada \***\*styles\*\*** y dentro un
+archivo \***\*globals.css\*\***, dentro has un copy/paste
 
-const SomeHeavyComponent = dynamic(() => import('SomeHeavyComponent'))
+```
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
 
-const defaultComponents = { Test }
+Luego dirigete a la carpeta \***\*Pages\*\***, y crea un archivo \***\*\_app.js\*\*** El "por qué"
+es para solo tener que importar el archivo de estilos de tailwind una sola vez, además si lo hacemos
+de otro lado next nos dará una advertencia
 
-export function SomePage({ mdxSource, componentNames }) {
-  const components = {
-    ...defaultComponents,
-    SomeHeavyComponent: componentNames.includes('SomeHeavyComponent')
-      ? SomeHeavyComponent
-      : null,
-  }
+```
+import "../styles/globals.css";
 
-  return <MDXRemote {...mdxSource} components={components} />
+function MyApp({ Component, pageProps }) {
+    return <Component {...pageProps} />;
 }
 
-export async function getStaticProps() {
-  const source = `---
-  title: Conditional custom components
-  ---
+export default MyApp;
+```
 
-  Some **mdx** text, with a default component <Test name={title}/> and a Heavy component <SomeHeavyComponent />
-  `
+Si deseas tener un mejor control global de los estilos podrias crear un \***\*div\*\*** o
+un \***\*main\*\*** que envuelva al componente \***\*Component\*\*** y desde ahi dar estilos que se
+muestren de forma global en toda la app
 
-  const { content, data } = matter(source)
+6- Instalar Tailwind-Typography:
 
-  const componentNames = [
-    /<SomeHeavyComponent/.test(content) ? 'SomeHeavyComponent' : null,
-  ].filter(Boolean)
+```
+yarn add  @tailwindcss/typography --dev
+```
 
-  const mdxSource = await serialize(content)
+7- Configurar Tailwind-Typography dirijete a la raiz y busca el
+archivo: \***\*tailwind.config.js\*\*** y has copy/paste en plugins:
 
-  return {
-    props: {
-      mdxSource,
-      componentNames,
-    },
-  }
+```
+plugins: [
+    require('@tailwindcss/typography'),
+  ],
+```
+
+7- Usar tailwind typografy dirigete a \***\*pages/posts/[slug].js\*\***, dentro encontrarás un
+componente \***\*MDXRemote\*\***, si no está envuelto de alguna etiqueta envuelvelo en
+un \***\*article\*\*** y dale la clase de \***\*prose\*\***
+
+```
+<article className="prose>
+           <MDXRemote {...source} components={components} />
+ </article>
+```
+
+8- Personalizar tailwind typography: Puede que algunos colores no sean muy aptos
+
+puedes darle una clase extra, ejemplo: \***\*internal-prose\*\***
+
+```
+<article className="prose .internal-prose">
+```
+
+y desde el \***\*globals.css\*\*** manejar las etiquetas que estarán dentro
+
+```
+.internal-prose h1,
+.internal-prose h2,
+.internal-prose h3,
+.internal-prose h4,
+.internal-prose h5,
+.internal-prose h6 {
+    @apply text-gray-300 text-3xl;
 }
+
+.internal-prose {
+    @apply py-10;
+}
+
+.internal-prose * {
+    @apply text-gray-400 text-lg;
+}
+
+```
+
+otra alternativa es manejar todo con las mismas clases de tailwind:
+
+```
+<article className="prose prose-headings:text-red-600 prose-headings:text-lg">
 ```
