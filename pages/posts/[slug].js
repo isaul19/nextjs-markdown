@@ -57,7 +57,7 @@ export async function getStaticProps(context) {
             },
             source: mdxSource,
         },
-        revalidate: 60 * 60 * 24,
+        revalidate: 60 * 60,
     };
 }
 
