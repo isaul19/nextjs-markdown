@@ -1,17 +1,16 @@
-import fs from "fs";
 import matter from "gray-matter";
 import { MDXRemote } from "next-mdx-remote";
 import { serialize } from "next-mdx-remote/serialize";
 import Link from "next/link";
-import path from "path";
-import { postFilePaths, POSTS_PATH } from "../../utils/mdxUtils";
+import { withSSRContext } from "aws-amplify";
+import { UntitledModel } from "../../src/models";
 
 // Custom components/renderers to pass to MDX.
 // Since the MDX files aren't loaded by webpack, they have no knowledge of how
 // to handle import statements. Instead, you must include components in scope
 // here.
 
-export default function PostPage({ source, frontMatter }) {
+export default function PostPage({ source, data }) {
     return (
         <div className="max-w-[80%] lg:max-w-[60%] mx-auto pt-10">
             <header>
@@ -22,14 +21,13 @@ export default function PostPage({ source, frontMatter }) {
                 </nav>
             </header>
             <div className="post-header my-5">
-                <p className="text-4xl text-gray-300 font-bold">{frontMatter.title}</p>
+                <p className="text-4xl text-gray-300 font-bold">{data.title}</p>
                 <p>
-                    Creado en:{" "}
-                    <span className="text-gray-300 font-bold">{frontMatter.createdAt}</span>
+                    Creado en: <span className="text-gray-300 font-bold">{data.createdAt}</span>
                 </p>
                 <p>
                     Ultima actualización:{" "}
-                    <span className="text-gray-300 font-bold">{frontMatter.updatedAt}</span>
+                    <span className="text-gray-300 font-bold">{data.updatedAt}</span>
                 </p>
             </div>
             <hr />
@@ -40,38 +38,35 @@ export default function PostPage({ source, frontMatter }) {
     );
 }
 
-export const getStaticProps = async ({ params }) => {
-    const postFilePath = path.join(POSTS_PATH, `${params.slug}.mdx`);
-    const source = fs.readFileSync(postFilePath);
-
-    const { content, data } = matter(source);
-
-    const mdxSource = await serialize(content, {
-        // Optionally pass remark/rehype plugins
-        mdxOptions: {
-            remarkPlugins: [],
-            rehypePlugins: [],
-        },
-        scope: data,
-    });
+export async function getStaticProps(context) {
+    // console.log(context);
+    const { DataStore } = withSSRContext(context);
+    const { params } = context;
+    const { slug } = params;
+    const post = await DataStore.query(UntitledModel, slug);
+    const { data, content } = matter(post.content);
+    console.log(data, content);
+    const mdxSource = await serialize(content);
 
     return {
         props: {
+            data: {
+                ...data,
+                createdAt: post.createdAt,
+                updatedAt: post.updatedAt,
+            },
             source: mdxSource,
-            frontMatter: data,
         },
+        revalidate: 60 * 60 * 24,
     };
-};
+}
 
-export const getStaticPaths = async () => {
-    const paths = postFilePaths
-        // Remove file extensions for page paths
-        .map((path) => path.replace(/\.mdx?$/, ""))
-        // Map the path into the static paths object required by Next.js
-        .map((slug) => ({ params: { slug } }));
-
+export async function getStaticPaths(context) {
+    const { DataStore } = withSSRContext(context);
+    const posts = await DataStore.query(UntitledModel);
+    const paths = posts.map((post) => ({ params: { slug: post.id } }));
     return {
         paths,
-        fallback: false,
+        fallback: true,
     };
-};
+}
